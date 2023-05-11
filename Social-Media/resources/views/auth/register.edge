@@ -1,0 +1,17 @@
+@layout('layouts/main')
+@set('title', 'Home page')
+
+
+@section('body')
+
+
+<form action="{{ route('auth.register') }}" method="POST">
+
+    <input type="text" placeholder="name" name="username" />
+    <input type="text" placeholder="email address" name="email" />
+    <input type="password" placeholder="password" name="password" />
+
+    <button type="submit">Register</button>
+    <p class="message">Already registered? <a href="/login">Sign In</a></p>
+</form>
+@end

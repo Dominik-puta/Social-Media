@@ -1,0 +1,35 @@
+@layout('layouts/main')
+@set('title', 'Friendlist')
+
+@section('body')
+<h1>Friendlist</h1>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <ul class="list-group">
+                @each(user in friendlist)
+                <li class="list-group-item d-flex justify-content-between align-items-center">{{user.username}}
+                    <form action="{{route('friends.deleteFriend')}}" method="POST">
+                        <button type="submit" class="btn btn-primary" name="id" value={{user.id}}>Remove
+                            friend</button>
+                    </form>
+
+                </li>
+                @end
+            </ul>
+        </div>
+        <div class="col">
+            @if(flashMessages.has('UnableToAdd'))
+            <h1>{{flashMessages.get('UnableToAdd')}}</h1>
+            @endif
+            <form action="{{route('friends.addFriend')}}" method="POST">
+                <input type="text" placeholder="username" name="username" />
+                <button type="submit" class="btn btn-primary">Add
+                    friend</button>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@end

@@ -1,0 +1,16 @@
+@layout('layouts/main')
+@set('title', 'Home page')
+
+@section('body')
+
+
+<form action="{{route('auth.login')}}" method="POST">
+    @if(flashMessages.has('form'))
+    <h1>{{flashMessages.get('form')}}</h1>
+    @endif
+    <input type="text" placeholder="username or Email" name="uid" />
+    <input type="password" placeholder="password" name="password" />
+    <button type="submit">Login</button>
+    <p class="message">Not registered? <a href="/register">Create an account</a></p>
+</form>
+@end
