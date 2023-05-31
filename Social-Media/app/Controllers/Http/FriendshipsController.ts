@@ -23,7 +23,6 @@ export default class FriendshipsController {
 
     async show(id) {
         const friendshi = await Friendship.find(id)
-        console.log(friendshi);
     }
 
     public async addFriend({ request, auth, response, session }: HttpContextContract) {

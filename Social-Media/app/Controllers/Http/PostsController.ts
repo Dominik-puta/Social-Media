@@ -52,7 +52,6 @@ export default class PostsController {
                     postlist.push(post);
                 }
         }
-        console.log(LikesController.getLikes(0));
         postlist.sort(this.dynamicSort('createdAt'));
         return view.render('welcome', { postlist: postlist });
     }

@@ -22,6 +22,8 @@ import Route from '@ioc:Adonis/Core/Route'
 import FriendshipsController from 'App/Controllers/Http/FriendshipsController';
 import PostsController from 'App/Controllers/Http/PostsController';
 import LikesController from 'App/Controllers/Http/LikesController';
+import AuthController from 'App/Controllers/Http/AuthController';
+import Token from 'App/Models/Token';
 
 Route.get('/', 'PostsController.showFeed').as('post.showFeed');
 Route.get('register', 'AuthController.registerShow').as('auth.register.show');
@@ -35,4 +37,29 @@ Route.post('removeFriend', 'FriendshipsController.deleteFriend').as('friends.del
 Route.post('addpost', 'PostsController.addPost').as('post.addPost');
 Route.post('deletepost', 'PostsController.deletePost').as('post.deletePost');
 Route.post('likepost', 'LikesController.likePost').as('like.likePost');
+Route.get("/verify-email", async ({ view, request, response }) => {
+    const token = request.input("token");
+
+    if (!token) {
+        return response.redirect("/");
+    }
+
+    const existingToken = await Token.query()
+        .preload("user")
+        .where("token", token)
+        .first();
+
+    if (!existingToken) {
+        return response.redirect("/");
+    }
+
+    // Update the user attached to the token and save.
+    existingToken.user.email_verified = true;
+    existingToken.user.save();
+
+    // Delete the token
+    await existingToken.delete();
+
+    return view.render("emails/verified");
+});
 

@@ -1,6 +1,9 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import User from 'App/Models/User';
+import Mail from '@ioc:Adonis/Addons/Mail'
+import Encryption from '@ioc:Adonis/Core/Encryption'
+import Token from 'App/Models/Token';
 
 export default class AuthController {
     public async registerShow({ view }: HttpContextContract) {
@@ -14,8 +17,21 @@ export default class AuthController {
         })
         const data = await request.validate({ schema: userSchema });
         const user = await User.create(data);
-        await auth.login(user);
 
+        const token = await Token.create({
+            user_id: user.id,
+            token: Encryption.encrypt(user.id.toString() + user.createdAt),
+            type: "email_verification",
+        });
+        await Mail.send((message) => {
+            message
+                .from("dominik@adonis.com") // Replace with your own email
+                .to(user.email)
+                .subject("Email verification")
+                .htmlView("emails/verification", { token: token.token });
+        });
+
+        await auth.login(user);
         return response.redirect('/');
 
     }
@@ -32,7 +48,12 @@ export default class AuthController {
             session.flash('form', 'Your username, email or password is inncorect');
             return response.redirect().back();
         }
+
         return response.redirect('/');
+
+
+
+
     }
     public async logout({ response, auth, session }: HttpContextContract) {
         await auth.logout();
